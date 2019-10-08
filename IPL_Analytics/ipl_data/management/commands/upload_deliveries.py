@@ -22,7 +22,7 @@ class Command(BaseCommand):
             delivery_data   = codecs.open(os.path.join(MEDIA_ROOT , 'CSVData/deliveries.csv'), "rb",encoding='ascii', errors='ignore')
             delivery_data_reader = csv.DictReader(delivery_data)
         except Exception as e:
-            print "Error in opening the dataCSV: " + str(e)
+            return "Error in opening the dataCSV: " + str(e)
         i = 0  
         upload_datas  = []
         print "This process May take some time...."
