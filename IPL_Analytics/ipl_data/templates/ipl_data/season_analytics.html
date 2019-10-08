@@ -1,0 +1,88 @@
+{% extends 'ipl_data/base.html' %}
+
+{% block content %}
+    <script type ="text/javascript">
+       $(document).ready(function() {
+          $("#select_season").on('change',function(){
+                season_id = $("#select_season").val();
+                get_season_analysis(season_id);
+                get_location_analysis(season_id);
+                get_toss_analysis(season_id);
+                get_victory_analysis(season_id);
+          });
+       });
+
+       function get_season_analysis(season_id){
+            $.ajax({
+                url : "{% url 'top_teams'  %}",
+                type : "POST",
+                dataType: "json",
+                data : { season_id	 : season_id },
+                success : function(json) {console.log(json);},
+                error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
+            });
+       }
+
+       function get_toss_analysis(season_id){
+        $.ajax({
+                url : "{% url 'top_toss'  %}",
+                type : "POST",
+                dataType: "json",
+                data : { season_id	 : season_id },
+                success : function(json) {console.log(json);},
+                error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
+            });
+       }
+
+       function get_location_analysis(season_id){
+            $.ajax({
+                url : "{% url 'top_locations'  %}",
+                type : "POST",
+                dataType: "json",
+                data : { season_id	 : season_id },
+                success : function(json) {console.log(json);},
+                error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
+            });
+       }
+
+       function get_victory_analysis(season_id){
+            $.ajax({
+                url : "{% url 'top_wins'  %}",
+                type : "POST",
+                dataType: "json",
+                data : { season_id	 : season_id },
+                success : function(json) {console.log(json);},
+                error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
+            });
+       } 
+
+    </script>
+
+
+    <label> Select Season </label>
+    <select name="select_season"  id = "select_season" class ="select2">
+        {% for season in seasons %}
+        <option value = "{{season.id}}"> {{season.season_name}}</option>
+        {% endfor %}
+    </select>
+    <div id="season_analysis">
+        <div id="top_team"></div>
+        <div id="top_team_highest_win_locations"></div>
+        <div id="top_4_teams_by_wins"></div>
+        <div id="top_man_of_match_winner"></div>
+    </div>
+    <div id="toss_analysis">
+        <div id="top_toss_win_team"></div>
+        <div id="team_wise_toss_match_win"></div>
+        <div id="chose_to_bat_percentage"></div>
+    </div>  
+    <div id="location_analysis">
+        <div id="top_venue_names"></div>
+        <div id="venue_status_dict"></div>
+    </div> 
+    <div id="victory_analysis">
+        <div id="top_team_by_run_margin"></div>
+        <div id="top_team_by_wkt_margin"></div>
+    </div> 
+    
+{% endblock %}
