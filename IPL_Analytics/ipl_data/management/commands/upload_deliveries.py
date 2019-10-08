@@ -8,6 +8,8 @@ import codecs
 from ipl_data.models import Delivery,Match
 import csv
 import ast
+from settings import MEDIA_ROOT
+import os
 
 class Command(BaseCommand):
     help="Upload Deliveries"
@@ -17,7 +19,7 @@ class Command(BaseCommand):
         if Delivery.objects.exists():
             return "Already Deliveries created"
         try:
-            delivery_data   = codecs.open("D:\\IPL\\CSVData\\deliveries.csv", "rb",encoding='ascii', errors='ignore')
+            delivery_data   = codecs.open(os.path.join(MEDIA_ROOT , 'CSVData/deliveries.csv'), "rb",encoding='ascii', errors='ignore')
             delivery_data_reader = csv.DictReader(delivery_data)
         except Exception as e:
             print "Error in opening the dataCSV: " + str(e)
