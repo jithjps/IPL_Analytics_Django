@@ -19,11 +19,15 @@ passowrd: root
    Once above steps are done   
    Do django migrations by running below commands inside project directory
      >> python manage.py makemigrations
+
+
      >> python manage.py migrate
 
 4. Populate DB
    Run below commnds to populate DB schema
       >> python manage.py upload matches
+
+
       >> python manage.py upload_deliveries
 
    CSV files are located in media/CSVdata folder. Make sure you have enough rights to read the files from the location
