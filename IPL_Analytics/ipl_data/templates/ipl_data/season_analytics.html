@@ -1,5 +1,6 @@
 {% extends 'ipl_data/base.html' %}
-{% block content %}
+
+{% block scripts %}
     <script type ="text/javascript">
        $(document).ready(function() {
           $("#select_season").on('change',function(){
@@ -154,7 +155,10 @@
             });
        } 
     </script>
-	<div class="conatiner">
+{% endblock %}
+
+{% block content %}
+   <div class="conatiner">
 		<label> Select Season </label>
 		<select name="select_season"  id = "select_season" class ="select2" style="width:100%">
 		    <option value = ''> Select a season to Analyse </option>
