@@ -1,88 +1,207 @@
 {% extends 'ipl_data/base.html' %}
-
 {% block content %}
     <script type ="text/javascript">
        $(document).ready(function() {
           $("#select_season").on('change',function(){
                 season_id = $("#select_season").val();
-                get_season_analysis(season_id);
-                get_location_analysis(season_id);
-                get_toss_analysis(season_id);
-                get_victory_analysis(season_id);
+				if (season_id != ''){
+					get_season_analysis(season_id);
+					get_location_analysis(season_id);
+					get_toss_analysis(season_id);
+					get_victory_analysis(season_id);
+				}
+				else {
+					return false;
+				}
           });
        });
-
        function get_season_analysis(season_id){
             $.ajax({
                 url : "{% url 'top_teams'  %}",
                 type : "POST",
                 dataType: "json",
                 data : { season_id	 : season_id },
-                success : function(json) {console.log(json);},
+                success : function(json) {
+				    top_team = json.top_team;
+					top_win_venues = json.top_win_venues;
+					top_team_content = ''
+					$.each( top_team, function(idx, obj) {
+					    top_team_content+= '<div class="card border-primary"><div class="card-body text-primary text-center">';
+						top_team_content+= '<h4 class="card-title"> '+ obj.winner +'</h4>';
+						top_team_content+= '<p class="card-text"> '+ obj.win_count + ' wins</p>';
+						top_team_content+= '<strong> Maximum Victory At </strong> <ul class="list-group list-group-flush">';
+						$.each(top_win_venues, function(i, vobj){
+						    if (obj.winner == vobj.winner){
+								top_team_content+= '<li class="list-group-item">' + vobj.venue + '( '+ vobj.venue_count + ' times )' + </li>';
+							}						    
+						});
+						top_team_content+= '</ul></div></div>';
+					});
+					$("#top_1_team").html(top_team_content);
+
+					
+					top_4_teams = json.top_4_teams;
+					top_4_teams_content = '';
+					$.each( top_4_teams, function(idx, obj) {
+						top_4_teams_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
+						top_4_teams_content += '<h4 class="card-title">' + obj.winner +'</h4>';
+						top_4_teams_content += '<p class="card-text"> ' + obj.win_count + ' wins </p>';
+                        top_4_teams_content += '</div></div>';
+					});
+					$("#top_4_teams").html(top_4_teams_content);
+					
+					top_mom_player = json.top_mom_player;
+					top_mom_player_content = '';
+					$.each( top_4_teams, function(idx, obj) {
+						top_mom_player_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
+						top_mom_player_content += '<h4 class="card-title">' + obj.player_of_match +'</h4>';
+						top_mom_player_content += '<p class="card-text"> ' + obj.win_count + ' wins </p>';
+                        top_mom_player_content += '</div></div>';
+					});
+					$("#top_mom_player").html(top_mom_player_content);
+					return false;
+				},
                 error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
             });
        }
-
        function get_toss_analysis(season_id){
         $.ajax({
                 url : "{% url 'top_toss'  %}",
                 type : "POST",
                 dataType: "json",
                 data : { season_id	 : season_id },
-                success : function(json) {console.log(json);},
+                success : function(json) {
+					top_toss_win_team = json.top_toss_win_team;
+					top_toss_win_team_content = '';
+					$.each( top_toss_win_team, function(idx, obj) {
+						top_toss_win_team_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
+						top_toss_win_team_content += '<h4 class="card-title">' + obj.toss_winner +'</h4>';
+						top_toss_win_team_content += '<p class="card-text"> ' + obj.toss_count + ' Times </p>';
+                        top_toss_win_team_content += '</div></div>';
+					});
+					$("#top_toss_win_teams").html(top_toss_win_team_content);			
+					
+					
+					chose_to_bat_percentage = json.chose_to_bat_percentage;
+					$("#toss_to_bat_percentage").html(chose_to_bat_percentage + "%");
+					
+					team_wise_toss_match_win = json.team_wise_toss_match_win;
+					toss_match_win_content = '';
+					$.each( top_toss_win_team, function(idx, obj) {
+					    toss_match_win_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
+						toss_match_win_content += '<h4 class="card-title">' + obj.winner +'</h4>';
+						toss_match_win_content += '<p class="card-text"> ' + obj.team_count + ' won both </p>';
+                        toss_match_win_content += '</div></div>';
+					});
+					$("#toss_match_win_teams").html(toss_match_win_content);
+					
+					
+				},
                 error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
             });
        }
-
        function get_location_analysis(season_id){
             $.ajax({
                 url : "{% url 'top_locations'  %}",
                 type : "POST",
                 dataType: "json",
                 data : { season_id	 : season_id },
-                success : function(json) {console.log(json);},
+                success : function(json) {
+					venue_status_dict = json.venue_status_dict;
+					venue_status_content = '';
+					$.each( venue_status_dict, function(venue, team_dict) {
+						venue_status_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
+						venue_status_content += 'h4 class="card-title"> ' + venue + '</h4>';
+						venue_status_content += '<ul class="list-group list-group-flush">';
+						$.each(team_dict, function(team, status_dict){						
+							venue_status_content += '<li class="list-group-item"> '+ team +' | ';
+                            $.each(status_dict, function(i, obj){
+								venue_status_content +=  obj.win +'Wins | ' + obj.lose +' Loses | '+ obj.tie_or_no_result +' No result or ties</li>';
+							});
+                        });
+		              venue_status_content + = '</ul> </div> </div> <br/> ';					 					  
+					});
+					$('#top_host_venue_cards').html(venue_status_content);
+					return false;				
+				},
                 error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
             });
        }
-
        function get_victory_analysis(season_id){
             $.ajax({
                 url : "{% url 'top_wins'  %}",
                 type : "POST",
                 dataType: "json",
                 data : { season_id	 : season_id },
-                success : function(json) {console.log(json);},
+                success : function(json) {
+					'winner','win_by_runs',win_by_wickets
+					top_team_by_run_margin = json.top_team_by_run_margin;
+					win_by_run_teams_content = '';
+					$.each( top_team_by_run_margin, function(idx, obj) {
+						win_by_run_teams_content += '<li class="list-group-item">'+ obj.winner + ' <small> by ' + obj.win_by_runs + ' Runs</small></li>';
+					});
+					$("#win_by_run_teams").html(win_by_run_teams_content);
+					
+					top_team_by_wkt_margin = json.top_team_by_wkt_margin;
+					win_by_wkt_teams_content = '';
+					$.each( top_team_by_wkt_margin, function(idx, obj) {
+						win_by_run_teams_content += '<li class="list-group-item">'+ obj.winner + ' <small> by ' + obj.win_by_wickets + ' Wickets</small></li>';
+					});
+					$("#win_by_wkt_teams").html(win_by_wkt_teams_content);
+					return false;
+				},
                 error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
             });
        } 
-
     </script>
-
-
-    <label> Select Season </label>
-    <select name="select_season"  id = "select_season" class ="select2">
-        {% for season in seasons %}
-        <option value = "{{season.id}}"> {{season.season_name}}</option>
-        {% endfor %}
-    </select>
-    <div id="season_analysis">
-        <div id="top_team"></div>
-        <div id="top_team_highest_win_locations"></div>
-        <div id="top_4_teams_by_wins"></div>
-        <div id="top_man_of_match_winner"></div>
-    </div>
-    <div id="toss_analysis">
-        <div id="top_toss_win_team"></div>
-        <div id="team_wise_toss_match_win"></div>
-        <div id="chose_to_bat_percentage"></div>
-    </div>  
-    <div id="location_analysis">
-        <div id="top_venue_names"></div>
-        <div id="venue_status_dict"></div>
-    </div> 
-    <div id="victory_analysis">
-        <div id="top_team_by_run_margin"></div>
-        <div id="top_team_by_wkt_margin"></div>
-    </div> 
+	<div class="conatiner">
+		<label> Select Season </label>
+		<select name="select_season"  id = "select_season" class ="select2" style="width:100%">
+		    <option value = ''> Select a season to Analyse </option>
+			{% for season in seasons %}
+			<option value = "{{season.id}}"> {{season.season_name}}</option>
+			{% endfor %}
+		</select>
+	</div>
+	
+	<hr/>
+	
+    <div class="container">
+		<h3>Top Most Match Winning Teams </h3>
+		<hr/>
+		<div class="card-columns" id="top_1_teams">
+		</div>
+  
+		<h3>Top 4 Teams in terms of Wins </h3>
+		<hr/>
+		<div class="card-columns" id="top_4_teams">
+		</div>
+  
+		<h3>Top Man of the Match Winners </h3>
+		<hr/>
+		<div class="card-columns" id="top_mom_player">
+		</div>
+  
+		<h3>Top Winning Teams By Highest Margins</h3>
+		<hr/>
+		<div class="card-columns">
+			<div class="card border-primary">
+				<div class="card-body text-primary text-center">
+					<h4 class="card-title">Highest Run Margin Winning Teams</h4>
+					<ul class="list-group list-group-flush" id = 'win_by_run_teams'>
+					</ul>
+				</div>
+			</div>
+			<div class="card border-primary">
+				<div class="card-body text-primary text-center">
+					<h4 class="card-title">Highest Wicket Margin Winning Teams</h4>
+					<ul class="list-group list-group-flush" id = win_by_wkt_teams>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<hr/> 
+ 
+	</div>  
     
 {% endblock %}
