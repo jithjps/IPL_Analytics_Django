@@ -8,6 +8,8 @@ import codecs
 from ipl_data.models import Season,Match
 import csv
 import ast
+import os
+from settings import MEDIA_ROOT
 
 class Command(BaseCommand):
     help="Upload Matches"
@@ -33,10 +35,10 @@ class Command(BaseCommand):
         if Match.objects.exists():
             return "Already Matches created"
         try:
-            match_data   = codecs.open("D:\\IPL\\CSVData\\matches.csv", "rb",encoding='ascii', errors='ignore')
+            match_data   = codecs.open(os.path.join(MEDIA_ROOT, 'CSVData/matches.csv', "rb",encoding='ascii', errors='ignore')
             match_data_reader = csv.DictReader(match_data)
         except Exception as e:
-            print "Error in opening the dataCSV: " + str(e)
+            return  "Error in opening the dataCSV: " + str(e)
         i = 0  
         upload_datas  = []
         for i,_data in enumerate(match_data_reader,1):  
