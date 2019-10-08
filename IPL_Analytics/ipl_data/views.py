@@ -43,7 +43,7 @@ def  top4teams_by_wins(request):
     top_win_venue_data = []
     for top_team_name in top_team_names:   
         win_venues  = Match.objects.filter(season_id = season_id, winner =  top_team_name).\
-                                    values('venue').\
+                                    values('venue','Team').\
                                     annotate(venue_count = Count('venue')).\
                                     order_by('-venue_count')                                 
         top_win_venue_count = win_venues.filter(values_list('venue_count',flat = True).first()
