@@ -8,6 +8,7 @@ The project Runs on django and PostgresSQL server.
    Database shiuld be postgreSQL >9.5
    
    DB details can be changed as per settings.py or update those params based on your DB
+   
    Sample DB settings
       DB name : IPL_DB 
       
@@ -34,15 +35,21 @@ The project Runs on django and PostgresSQL server.
 
       >> python manage.py upload_deliveries
 
-   CSV files are located in media/CSVdata folder. Make sure you have enough rights to read the files from the location
+   CSV files are located in media/CSVdata folder. 
+   
+   Make sure you have enough rights to read the files from the location
+   
    NOTE:
         - Run the commnds in the same order as mentioned
         
-        -  Incase of any issues while running check the result and try again after fixing the problems.
+        - Incase of any issues while running check the result and try again after fixing the problems.
            But before that create a fresh DB to avoid confusions
 
 5. Run server
    >> python manage.py runserver
+
+6. Go to browser and hit URL 
+   >> http://<host:name>/IPL/
 
 
 
