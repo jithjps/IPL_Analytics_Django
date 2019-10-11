@@ -20,6 +20,6 @@ from django.contrib import admin
 # handler500 = 'ipl_data.views.teleduce_custom_500_view'
 
 urlpatterns = [
-    url(r'^ipl/', include('ipl_data.urls')),
+    url(r'^IPL/', include('ipl_data.urls')),
     url(r'^admin/', admin.site.urls),
 ]
