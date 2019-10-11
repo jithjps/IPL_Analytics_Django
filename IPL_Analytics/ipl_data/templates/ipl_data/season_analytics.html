@@ -33,12 +33,12 @@
 						top_team_content+= '<strong> Maximum Victory At </strong> <ul class="list-group list-group-flush">';
 						$.each(top_win_venues, function(i, vobj){
 						    if (obj.winner == vobj.winner){
-								top_team_content+= '<li class="list-group-item">' + vobj.venue + '( '+ vobj.venue_count + ' times )' + </li>';
+								top_team_content+= '<li class="list-group-item">' + vobj.venue + '( '+ vobj.venue_count + ' times )</li>';
 							}						    
 						});
 						top_team_content+= '</ul></div></div>';
 					});
-					$("#top_1_team").html(top_team_content);
+					$("#top_1_teams").html(top_team_content);
 
 					
 					top_4_teams = json.top_4_teams;
@@ -53,7 +53,7 @@
 					
 					top_mom_player = json.top_mom_player;
 					top_mom_player_content = '';
-					$.each( top_4_teams, function(idx, obj) {
+					$.each( top_mom_player, function(idx, obj) {
 						top_mom_player_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
 						top_mom_player_content += '<h4 class="card-title">' + obj.player_of_match +'</h4>';
 						top_mom_player_content += '<p class="card-text"> ' + obj.win_count + ' wins </p>';
@@ -65,6 +65,7 @@
                 error : function(xhr,errmsg,err) {alert(xhr.status + ": " + xhr.responseText);}
             });
        }
+
        function get_toss_analysis(season_id){
         $.ajax({
                 url : "{% url 'top_toss'  %}",
@@ -88,11 +89,8 @@
 					
 					team_wise_toss_match_win = json.team_wise_toss_match_win;
 					toss_match_win_content = '';
-					$.each( top_toss_win_team, function(idx, obj) {
-					    toss_match_win_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
-						toss_match_win_content += '<h4 class="card-title">' + obj.winner +'</h4>';
-						toss_match_win_content += '<p class="card-text"> ' + obj.team_count + ' won both </p>';
-                        toss_match_win_content += '</div></div>';
+					$.each( team_wise_toss_match_win, function(idx, obj) {
+					    toss_match_win_content += '<li class="list-group-item">' + obj.winner + '( ' + obj.team_count + ' Times)</li>';
 					});
 					$("#toss_match_win_teams").html(toss_match_win_content);
 					
@@ -109,18 +107,17 @@
                 data : { season_id	 : season_id },
                 success : function(json) {
 					venue_status_dict = json.venue_status_dict;
+					top_hosting_count   = json.top_hosting_count;					
 					venue_status_content = '';
 					$.each( venue_status_dict, function(venue, team_dict) {
 						venue_status_content += '<div class="card border-primary"> <div class="card-body text-primary text-center">';
-						venue_status_content += 'h4 class="card-title"> ' + venue + '</h4>';
+						venue_status_content += '<h4 class="card-title"> ' + venue + ' ( '+top_hosting_count+' Times )</h4>';						 						 
 						venue_status_content += '<ul class="list-group list-group-flush">';
 						$.each(team_dict, function(team, status_dict){						
 							venue_status_content += '<li class="list-group-item"> '+ team +' | ';
-                            $.each(status_dict, function(i, obj){
-								venue_status_content +=  obj.win +'Wins | ' + obj.lose +' Loses | '+ obj.tie_or_no_result +' No result or ties</li>';
-							});
+							venue_status_content +=  status_dict.win +' Wins | ' + status_dict.lose +' Loses | '+ status_dict.tie_or_no_result +' No result or ties </li>';
                         });
-		              venue_status_content + = '</ul> </div> </div> <br/> ';					 					  
+		              venue_status_content += '</ul> </div> </div> <br/> ';					 					  
 					});
 					$('#top_host_venue_cards').html(venue_status_content);
 					return false;				
@@ -135,7 +132,6 @@
                 dataType: "json",
                 data : { season_id	 : season_id },
                 success : function(json) {
-					'winner','win_by_runs',win_by_wickets
 					top_team_by_run_margin = json.top_team_by_run_margin;
 					win_by_run_teams_content = '';
 					$.each( top_team_by_run_margin, function(idx, obj) {
@@ -146,7 +142,7 @@
 					top_team_by_wkt_margin = json.top_team_by_wkt_margin;
 					win_by_wkt_teams_content = '';
 					$.each( top_team_by_wkt_margin, function(idx, obj) {
-						win_by_run_teams_content += '<li class="list-group-item">'+ obj.winner + ' <small> by ' + obj.win_by_wickets + ' Wickets</small></li>';
+						win_by_wkt_teams_content += '<li class="list-group-item">'+ obj.winner + ' <small> by ' + obj.win_by_wickets + ' Wickets</small></li>';
 					});
 					$("#win_by_wkt_teams").html(win_by_wkt_teams_content);
 					return false;
@@ -158,14 +154,18 @@
 {% endblock %}
 
 {% block content %}
-   <div class="conatiner">
-		<label> Select Season </label>
-		<select name="select_season"  id = "select_season" class ="select2" style="width:100%">
-		    <option value = ''> Select a season to Analyse </option>
-			{% for season in seasons %}
-			<option value = "{{season.id}}"> {{season.season_name}}</option>
-			{% endfor %}
-		</select>
+   <div class="container row"> 
+        <div class="col-md-3">       
+			<label> Select Season to Analyse </label>
+		</div>
+		<div class="col-md-6">	
+			<select name="select_season"  id = "select_season" class ="form-control select2" >
+				<option value = ''> Select Season  </option>
+				{% for season in seasons %}
+				<option value = "{{season.id}}"> {{season.season_name}}</option>
+				{% endfor %}
+			</select>
+	    </div>		
 	</div>
 	
 	<hr/>
@@ -199,12 +199,44 @@
 			<div class="card border-primary">
 				<div class="card-body text-primary text-center">
 					<h4 class="card-title">Highest Wicket Margin Winning Teams</h4>
-					<ul class="list-group list-group-flush" id = win_by_wkt_teams>
+					<ul class="list-group list-group-flush" id = "win_by_wkt_teams">
 					</ul>
 				</div>
 			</div>
 		</div>
+
 		<hr/> 
+
+        <h3>Venues Hosted Maximum Matches </h3>
+		<hr/>
+		<div id="top_host_venue_cards">
+		</div>
+
+		<h3>Teams Won Maximum Toss </h3>
+		<hr/>
+		<div class="card-columns" id="top_toss_win_teams">
+		</div>
+
+		<hr/>
+		<div class="card border-primary">
+			<div class="card-body text-primary text-center">
+				<h4 class="card-title">Teams Won Both Toss and Match</h4>
+				<ul id = "toss_match_win_teams">
+				</ul>
+			</div>
+		</div>
+        
+		<hr/>
+        <div class="card border-primary">
+			<div class="card-body text-primary text-center">
+				<h4 class="card-title">
+				    <span id ="toss_to_bat_percentage"></span>
+					 of Teams Decided to Bat First When Won Toss
+				</h4>
+			</div>
+		</div>
+
+		
  
 	</div>  
     
